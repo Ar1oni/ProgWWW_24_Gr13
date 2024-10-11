@@ -1,0 +1,51 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+header{
+    background-color: black;
+}
+.header{
+    width: 95%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+}
+.logo{
+    padding-top: 15px;
+    width: 75px;
+    color: white;
+}
+.nav{
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    justify-content: space-between;
+    padding: 0px auto;
+    width: 22%;
+}
+.navLink{
+    text-decoration: none;
+    color: white;
+    font-size: 20px;
+    padding:15px;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    position: relative;
+}  
+.navLink::after{
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 4px;
+    background: black;
+    bottom: 0;
+    right: 0;
+}
+.navLink:hover{
+    background-color: rgba(124, 155, 240, 0.3); 
+}
+.navLink:hover::after {
+    background: rgb(73, 73, 239);
+  }

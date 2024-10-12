@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <title>Document</title>
 </head>
 <body>
@@ -13,13 +14,44 @@
        <div class="header">
         <h1 class="logo">MovieShop</h1>
         <nav class="nav">
-            <a class="navLink" href="index.html">Home</a>
+            <a class="navLink" href="index.html" >Home</a>
             <a class="navLink" href="favourites.html"><i class="fa-solid fa-bookmark fa-lg" style="color: #ffffff;"></i></a>
             <a class="navLink" href="Cart.html"><i class="fa-solid fa-cart-shopping fa-lg" style="color: #ffffff;"></i></a>
             <a class="navLink" href="Login.html">Login</a>
+            <img src="" alt="">
         </nav>
        </div>
     </header>
+    <div class="slider" id="slider"></div>
+    <div style="width: 90%; margin: 0px auto;">
+        <img  class="moviesImage" src="../images/image.jpeg" alt="">
+    </div>
+    <div class="movies" id="movies"></div>
+    <script type="module">
+        import Slider from '../components/Slider.js'
+        import slides from '../resources/slides.js'
+        import Movies from '../components/Movies.js'
+        const slider = document.getElementById('slider')
+        slider.innerHTML = 
+        `
+        <img class="sliderImg" src="${slides[0]}" alt="Slide" />
+        <img class="sliderImg" src="${slides[1]}" alt="Slide" />
+        <img class="sliderImg" src="${slides[2]}" alt="Slide" />
+        <img class="sliderImg" src="${slides[3]}" alt="Slide" />
+        <img class="sliderImg" src="${slides[4]}" alt="Slide" />
+        `
+
+        Slider({
+            slides: slides,
+            active_slide: 0,
+            container: slider,
+            delay: 5
+        })
+
+        const movies = document.getElementById('movies')
+        movies.innerHTML = Movies()
+    </script>
+ 
     
 </body>
-</html>
+</html> 

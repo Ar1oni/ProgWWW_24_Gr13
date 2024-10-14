@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <header>
+        <div class="header">
+            <h1 class="logo">MovieShop</h1>
+            <nav class="nav">
+                <a class="navLink" href="index.html">Home</a>
+                <a class="navLink" href="favourites.html"><i class="fa-solid fa-bookmark " style="color: #ff3333;"></i></a>
+                <a class="navLink" href="Cart.html"><i class="fa-solid fa-cart-shopping " style="color: #ff3333;"></i></a>
+                <a class="navLink" href="Login.html">Login</a>
+            </nav>
+        </div>
+    </header>
+    <section id="movieDetails">
+
+    </section>
+    <script type="module">
+        //marrja e id-s nga url-i
+        const params = new URLSearchParams(window.location.search);
+        const id = params.get('id');
+
+        axios.get(`https://api.themoviedb.org/3/movie/${id}?api_key=3e52e2f5350ae60de5e2fc58e818d2a0`)
+        .then(resp => {
+            const movie = resp.data
+            console.log(movie)
+            const thumb = (movie.backdrop_path !== null) ? `https://image.tmdb.org/t/p/w500${movie.backdrop_path}` : `https://www.its.ac.id/tmesin/wp-content/uploads/sites/22/2022/07/no-image.png`
+            const container = document.getElementById('movieDetails')
+            container.innerHTML = `
+            <div class="movieDivMD">
+                <img class="movieMD" src="${thumb}" alt="movie" />
+                <h2 class="movie-title">${movie.original_title}</h2>
+                <strong class="qualityMD">HD</strong>
+                <p class="ratingMd">${Math.round(movie.vote_average * 10) / 10}</p>
+                <p class="overview">${movie.overview}</p>
+                <p class="release-date">${movie.release_date}</p>
+                <p class="genres">${movie.genres[0].name}, ${movie.genres[1].name}</p>
+                <div class="button-container">
+                    <button class="bookmark-btn"><i class="fa-regular fa-bookmark"></i></button>
+                    <button class="cart-btn"><i class="fa-solid fa-cart-plus"></i></button>
+                </div>
+            </div>
+             `
+        })
+        .catch(e => console.log(e))
+
+
+
+        //Marrja e Footer nga components dhe vendosja ne page
+        import Footer from '../components/Footer.js'
+        document.getElementById('footer').innerHTML = Footer()
+    </script>
+    <footer id="footer" style="background-color: #000; color: #fff; text-align: center; padding: 20px 0;"></footer>
+</body>
+</html>

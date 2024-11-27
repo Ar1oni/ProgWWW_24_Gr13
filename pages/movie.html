@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <div class="header">
+              <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-video fa-2xl" style="color: #ffffff; margin-top: 15px;"></i>
+                <h3 style="color: white;">MovieShop</h3>
+            </div>
+            <nav class="nav">
+                <a class="navLink" href="index.html">Home</a>
+                <a class="navLink" href="favourites.html"><i class="fa-solid fa-bookmark " style="color: #ff3333;"></i></a>
+                <a class="navLink" href="Cart.html"><i class="fa-solid fa-cart-shopping " style="color: #ff3333;"></i></a>
+                <a class="navLink" href="Login.html">Login</a>
+            </nav>
+        </div>
+    </header>
+    <div class="container" id="container" style="display: flex;"></div>
+    <div id="loader" class="hidden">
+      <div class="spinner"></div>
+    </div>
+    <script type="module">
+        const params = new URLSearchParams(window.location.search);
+        const movieId = params.get('id');
+        const container = document.getElementById('container')
+        function showLoader() {
+          document.getElementById("loader").classList.remove("hidden");
+        }
+        
+        function hideLoader() {
+          document.getElementById("loader").classList.add("hidden");
+        }
+        
+        axios.get(`https://api.themoviedb.org/3/movie/${movieId}?api_key=3e52e2f5350ae60de5e2fc58e818d2a0`)
+        .then(resp => {
+
+            const movie = resp.data
+            const thumb = movie.backdrop_path 
+                    ? `https://image.tmdb.org/t/p/w500${movie.backdrop_path}` 
+                    : `https://www.its.ac.id/tmesin/wp-content/uploads/sites/22/2022/07/no-image.png`;
+            container.innerHTML = createMovie(movie,thumb)
+            document.getElementById('addToCartBtn').addEventListener('click', function () {
+              const quantity = document.getElementById('quantity').value;
+              const price = 22.99;
+              const data = {
+                movie_id: movieId,
+                quantity: quantity,
+                price: (quantity * price).toFixed(2),
+              };
+              showLoader()
+              axios.post('https://670d1d27073307b4ee425880.mockapi.io/api/v1/Cart', data)
+              .then(resp => {
+                hideLoader()
+                alert("Movie added to cart");
+              })
+              .catch(e => {
+                hideLoader();
+                console.log(e)
+              });  
+            });
+
+            const input = document.getElementById('quantity');
+            const increaseButton = document.getElementById('increment');
+            const decreaseButton = document.getElementById('decrement');
+            
+           
+            increaseButton.addEventListener('click', () => {
+              const max = parseInt(input.max) || Infinity; 
+              const value = parseInt(input.value) || 0;  
+              if (value < max) {
+                input.value = value + 1;
+              }
+            });
+            
+            
+            decreaseButton.addEventListener('click', () => {
+              const min = parseInt(input.min) || -Infinity; 
+              const value = parseInt(input.value) || 0;    
+              if (value > min) {
+                input.value = value - 1;
+              }
+            });
+            
+        })
+        .catch(e => console.log(e))
+        
+
+        function createMovie(movie, thumb){
+          const price = 22.99;
+            return `
+                <div class="mainAddToCartDiv">
+                    <div class="movieMDImg"> <img class="movieMD" src="${thumb}" alt="movie" /></div>
+                    <div class="addToCartDiv">
+                        <h2 class="movie-title">${movie.original_title}</h2>
+                        <strong class="qualityMD">HD</strong>
+                        <p class="ratingMd">${Math.round(movie.vote_average * 10) / 10}</p>
+                        <p class="overview">${movie.overview}</p>
+                        <p class="release-date">${movie.release_date}</p>
+                        <strong style="color:white; font-size: 20px;">£${price}</strong>
+                        <div style="height:30px; border-top: 1px solid #00aaff; border-bottom: 1px solid #00aaff; margin:10px 0px;"></div>
+                        <div class="addToCart">
+                            <p style="color:white; font-size:14px;">Quantity:</p>
+                            <div class="quantity-container">
+                              <div class="quantityDiv">
+                                <button id="decrement" class="quantity-btn">-</button>
+                                <input type="number" id="quantity" class="quantity-input" value="1" min="1" readonly>
+                                <button id="increment" class="quantity-btn">+</button>
+                              </div>
+                              <button id="addToCartBtn" class="addToCartBtn">ADD TO CART</button>
+                            </div>
+                            <button class="payWithPayPal">PAY WITH PAYPAL</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        } 
+
+        import Footer from '../components/Footer.js'
+        document.getElementById('footer').innerHTML = Footer()
+    </script>
+    <footer id="footer" style="background-color: #000; color: #fff; text-align: center; padding: 20px 0;"></footer>
+</body>
+</html>

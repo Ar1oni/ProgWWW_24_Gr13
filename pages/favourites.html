@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>MovieShop</title>
+</head>
+<body>
+    <header>
+        <div class="header">
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-video fa-2xl" style="color: #ffffff; margin-top: 15px;"></i>
+                <h3 style="color: white;">MovieShop</h3>
+            </div>
+            <nav class="nav">
+                <a class="navLink" href="index.html">Home</a>
+                <a class="navLink" href="favourites.html"><i class="fa-solid fa-bookmark " style="color: #ff3333;"></i></a>
+                <a class="navLink" href="Login.html">Login</a>
+            </nav>
+        </div>
+    </header>
+    <h1 style="color: #00e5ff; width: 90%; margin: 20px auto 0px;">Favourite Movies</h1>
+    <section class="favourites" id="favourites">
+    </section>
+    <div id="custom-alert" class="hidden" style="transition: all 0.3s ease; position: fixed; top: 20px; left: 40%; transform: translateX(-50%) translateY(-20px); opacity: 0; background-color: red; color: white; padding: 10px 20px; border-radius: 5px;">
+        <span id="alert-message"></span>
+        <button id="alert-close" style="margin-left: 20px; background: none; border: none; color: white;">&times;</button>
+    </div>   
+    <div id="loader" class="hidden">
+        <div class="spinner"></div>
+    </div> 
+    <script type="module">
+        const container = document.getElementById('favourites')
+        function showLoader() {
+          document.getElementById("loader").classList.remove("hidden");
+        }
+        
+        function hideLoader() {
+          document.getElementById("loader").classList.add("hidden");
+        }
+
+        axios.get('https://670d1d27073307b4ee425880.mockapi.io/api/v1/Favourites')
+            .then(resp => {
+                
+                const ids = resp.data;
+                for(let id of ids) {
+                    axios.get(`https://api.themoviedb.org/3/movie/${id.movie_id}?api_key=3e52e2f5350ae60de5e2fc58e818d2a0`)
+                    .then(resp => {
+                        const movie = resp.data;
+                        const thumb = (movie.backdrop_path !== null) 
+                            ? `https://image.tmdb.org/t/p/w500${movie.backdrop_path}` 
+                            : `https://www.its.ac.id/tmesin/wp-content/uploads/sites/22/2022/07/no-image.png`;
+                        container.innerHTML += createMovieHTML(movie, thumb, id.id); 
+                        
+                    })
+                    .catch(e => console.log(e));
+                }
+                
+        
+                container.addEventListener('click', (e) => {
+                    if (e.target.closest('.bookmark-btn')) {
+                        const movieId = e.target.closest('.movieDivMD').dataset.movieId;
+                        const recordId = e.target.closest('.movieDivMD').dataset.recordId;
+                        const button = e.target.closest('.bookmark-btn');
+                        removeFromFavourites(recordId, button); 
+                    }
+                });
+            })
+            .catch(e => console.log(e));
+
+        function createMovieHTML(movie, thumb, recordId) {
+            return `
+                <div class="movieDivMD" data-movie-id="${movie.id}" data-record-id="${recordId}"> <!-- Store recordId -->
+                    <img class="movieMD" src="${thumb}" alt="movie" />
+                    <h2 class="movie-title">${movie.original_title}</h2>
+                    <strong class="qualityMD">HD</strong>
+                    <p class="ratingMd">${Math.round(movie.vote_average * 10) / 10}</p>
+                    <p class="overview">${movie.overview}</p>
+                    <p class="release-date">${movie.release_date}</p>
+                    <div class="button-container">
+                        <button class="bookmark-btn"><i class="fa-regular fa-bookmark"></i></button>
+                        <button class="cart-btn"><i class="fa-solid fa-cart-plus"></i></button>
+                    </div>
+                </div>
+            `;
+        }
+
+        
+        function removeFromFavourites(recordId, button) {
+            showLoader();
+            const deleteUrl = `https://670d1d27073307b4ee425880.mockapi.io/api/v1/Favourites/${recordId}`;
+            axios.delete(deleteUrl)
+            .then(resp => {
+                hideLoader();
+                showAlert('Movie removed from Favourites');
+                const movieDiv = button.closest('.movieDivMD');
+                if (movieDiv) {
+                    movieDiv.remove(); 
+                }
+                
+            })
+            .catch(e => {
+                hideLoader();
+                console.error('Error removing movie from favourites:', e);
+            });
+        }
+        function showAlert(message, type = 'default') {
+            const alertBox = document.getElementById('custom-alert');
+            const alertMessage = document.getElementById('alert-message');
+        
+            alertMessage.textContent = message;
+        
+            if (type === 'delete') {
+                alertBox.style.backgroundColor = '';
+            } else {
+                alertBox.style.backgroundColor = 'red'; 
+            }
+        
+            
+            alertBox.classList.remove('hidden');
+            alertBox.style.opacity = '1';
+            alertBox.style.transform = 'translateY(0)';
+        
+            setTimeout(() => {
+                alertBox.style.opacity = '0'; 
+                alertBox.style.transform = 'translateY(-20px)';
+            }, 3000);
+        
+           
+            document.getElementById('alert-close').onclick = () => {
+                alertBox.style.opacity = '0'; 
+                alertBox.style.transform = 'translateY(-20px)'; 
+            };
+        }
+
+
+
+        import Footer from '../components/Footer.js'
+        document.getElementById('footer').innerHTML = Footer()
+    </script>
+    <footer id="footer" style="background-color: #000; color: #fff; text-align: center; padding: 20px 0;"></footer>
+</body>
+</html>

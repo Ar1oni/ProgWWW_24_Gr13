@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="register.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <title>MovieShop</title>
@@ -12,10 +13,7 @@
 <body>
     <header>
         <div class="header">
-            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px;">
-                <i class="fa-solid fa-video fa-2xl" style="color: #ffffff; margin-top: 15px;"></i>
-                <h3 style="color: white;">MovieShop</h3>
-            </div>
+            <h1 class="logo">MovieShop</h1>
             <nav class="nav">
                 <a class="navLink" href="index.html">Home</a>
                 <a class="navLink" href="favourites.html"><i class="fa-solid fa-bookmark " style="color: #ff3333;"></i></a>
@@ -23,7 +21,43 @@
             </nav>
         </div>
     </header>
+    <div class="containerLogIn">
+        <form>
+            <h1>Login</h1>
+            <p class="emailAndPassword">Email:</p>
+            <input type="email" id="email" placeholder="example@gmail.com">
+            <p>Password:</p>
+            <input type="password" id="password" placeholder="*******">
+            <button id="loginBtn">Login</button>
+            <p>Dont have an account? <a href="Register.html">Register here</a></p>
+        </form>
+    </div>
     <script type="module">
+
+        document.getElementById('loginBtn').addEventListener('click',function(event){
+            event.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            axios.get('https://673df73d0118dbfe86099351.mockapi.io/api/v1/users')
+            .then(resp => {
+                const users = resp.data;
+                const user = users.find(user => email === user.email && password === user.password);
+        
+                if (user) {
+                    alert('Logged in');
+                    localStorage.setItem("user",JSON.stringify(user));
+                    window.location.href = 'index.html';
+                } else {
+                    alert('Your email or password are wrong');
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("An error occurred while logging in. Please try again.");
+            });
+
+        })
         import Footer from '../components/Footer.js'
         document.getElementById('footer').innerHTML = Footer()
     </script>

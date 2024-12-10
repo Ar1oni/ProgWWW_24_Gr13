@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            background-color: black;
+        }
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 20px;
+        }
+        .profile-card {
+            border-radius: 8px;
+            padding: 20px;
+            background: black;
+            border: 1px solid white;
+            color: white;
+            width: 40%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .stats-card {
+            border-radius: 8px;
+            padding: 20px;
+            background: black;
+            border: 1px solid white;
+            color: white;
+            width: 40%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            margin-bottom: 10px;
+        }
+        p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+        table {
+            width: 100%;
+            color: white;
+            border-collapse: collapse;
+        }
+        table tr td {
+            padding: 10px;
+            font-size: 16px;
+        }
+        #logoutButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #logoutButton:hover {
+            background: #0056b3;
+        }
+        img {
+            width: 70%;
+            margin-left: 15%;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header">
+            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px;">
+                <i class="fa-solid fa-video fa-2xl" style="color: #ffffff; margin-top: 15px;"></i>
+                <h3 style="color: white;">MovieShop</h3>
+            </div>
+            <nav class="nav">
+                <a class="navLink" href="index.html">Home</a>
+                <a class="navLink" href="favourites.html"><i class="fa-solid fa-bookmark " style="color: #ff3333;"></i></a>
+            </nav>
+        </div>
+    </header>
+    <div class="container">
+        <div class="profile-card">
+            <img src="../images/user.jpg" alt="User">
+            <div style="margin-top: 20px;">
+                <h2 id="username">Username</h2>
+                <p id="email">Email</p>
+                <button id="logoutButton">Logout</button>
+                <a style="color: white;" href="main.html">Main</a>
+            </div>
+        </div>
+        <div class="stats-card">
+            <h2>Statistics</h2>
+            <table>
+                <tr>
+                    <td>Movies in Favourite:</td>
+                    <td id="favouriteCount">3</td>
+                </tr>
+                <tr>
+                    <td>Movies in Cart:</td>
+                    <td id="cartCount">5</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            const user = JSON.parse(localStorage.getItem('user'));
+            
+            if (user) {
+                $('#username').text(user.username || 'Unknown User');
+                $('#email').text(user.email || 'No Email Provided');
+    
+                // Fetch movies count for favourites and cart
+                const userId = user.id; // Assuming user ID is stored as `id` in localStorage
+    
+                if (userId) {
+                    // Fetch favourites
+                    $.get(`https://670d1d27073307b4ee425880.mockapi.io/api/v1/Favourites`, function (data) {
+                        const userFavourites = data.filter(movie => movie.user_id === userId);
+                        $('#favouriteCount').text(userFavourites.length);
+                    });
+    
+                    // Fetch cart
+                    $.get(`https://670d1d27073307b4ee425880.mockapi.io/api/v1/Cart`, function (data) {
+                        const userCart = data.filter(movie => movie.user_id === userId);
+                        $('#cartCount').text(userCart.length);
+                    });
+                } else {
+                    $('#favouriteCount').text(0);
+                    $('#cartCount').text(0);
+                }
+            } else {
+                $('#username').text('Guest');
+                $('#email').text('Please login to view your profile');
+                $('#favouriteCount').text(0);
+                $('#cartCount').text(0);
+            }
+    
+            $('#logoutButton').on('click', function () {
+                localStorage.removeItem('user'); 
+                window.location.href = 'Login.html'; 
+            });
+        });
+    </script>
+    
+</body>
+</html>

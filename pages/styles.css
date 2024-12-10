@@ -1,0 +1,123 @@
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f4f4f4;
+    color: #333;
+  }
+  
+header{
+    background-color: black;
+    border-bottom: 2px solid gray;
+}
+.header{
+    width: 95%;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+}
+.logo{
+    padding-top: 25px;
+    width: 75px;
+    color: #00aaff;
+}
+.nav{
+    display: grid;
+    grid-template-columns: repeat(5,1fr);
+    justify-content: space-between;
+    padding: 0px auto;
+    width: 23.5%;
+}
+.navLink{
+    text-decoration: none;
+    color: #ff3333;
+    font-size: 20px;
+    padding:15px;
+    padding-top: 35px;
+    padding-bottom: 35px;
+    position: relative;
+    cursor: pointer;
+}  
+.navLink::after{
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 4px;
+    background: black;
+    bottom: 0;
+    right: 0;
+}
+.navLink:hover{
+    background-color: rgba(124, 155, 240, 0.3); 
+}
+.navLink:hover::after {
+    background: rgb(73, 73, 239);
+}
+  
+  h1, h2 {
+    margin: 0;
+    padding-bottom: 0.5rem;
+  }
+  
+  main {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  section {
+    margin-bottom: 20px;
+  }
+  
+  address, p, ul, form {
+    margin: 0 0 1rem;
+    line-height: 1.6;
+  }
+  
+  ul {
+    list-style-type: disc;
+    padding-left: 20px;
+  }
+  
+  ul ul {
+    list-style-type: circle;
+    margin-left: 20px;
+  }
+  
+  a {
+    color: #2980b9;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  a:hover {
+    color: #3498db;
+    text-decoration: underline;
+  }
+  
+
+  video, audio {
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+  }
+  
+
+  .animated-box {
+    width: 100px;
+    height: 100px;
+    background: #3498db;
+    margin: auto;
+    animation: move 3s infinite;
+  }
+  
+  @keyframes move {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(100px, 100px); }
+    100% { transform: translate(0, 0); }
+  }
+  

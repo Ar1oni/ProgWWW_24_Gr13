@@ -19,11 +19,11 @@
             <nav class="nav">
                 <a class="navLink" href="index.html">Home</a>
                 <a class="navLink" href="favourites.html"><i class="fa-solid fa-bookmark " style="color: #ff3333;"></i></a>
-                <a class="navLink" href="Login.html">Login</a>
+                <a class="navLink" href="profile.html" ><i class="fa-solid fa-user" style="color: #ff3333;"></i></a>
             </nav>
         </div>
     </header>
-    <h1 style="color: #00e5ff; width: 90%; margin: 20px auto 0px;">Favourite Movies</h1>
+    <h1 style="color: #ffffff; width: 90%; margin: 20px auto 0px;">Favourite Movies</h1>
     <section class="favourites" id="favourites">
     </section>
     <div id="custom-alert" class="hidden" style="transition: all 0.3s ease; position: fixed; top: 20px; left: 40%; transform: translateX(-50%) translateY(-20px); opacity: 0; background-color: red; color: white; padding: 10px 20px; border-radius: 5px;">
@@ -43,21 +43,24 @@
           document.getElementById("loader").classList.add("hidden");
         }
 
+        
+
         axios.get('https://670d1d27073307b4ee425880.mockapi.io/api/v1/Favourites')
             .then(resp => {
-                
                 const ids = resp.data;
+                const user = JSON.parse(localStorage.getItem('user'));
                 for(let id of ids) {
-                    axios.get(`https://api.themoviedb.org/3/movie/${id.movie_id}?api_key=3e52e2f5350ae60de5e2fc58e818d2a0`)
-                    .then(resp => {
+                    if(id.user_id == user.id){
+                        axios.get(`https://api.themoviedb.org/3/movie/${id.movie_id}?api_key=3e52e2f5350ae60de5e2fc58e818d2a0`)
+                        .then(resp => {
                         const movie = resp.data;
                         const thumb = (movie.backdrop_path !== null) 
                             ? `https://image.tmdb.org/t/p/w500${movie.backdrop_path}` 
                             : `https://www.its.ac.id/tmesin/wp-content/uploads/sites/22/2022/07/no-image.png`;
-                        container.innerHTML += createMovieHTML(movie, thumb, id.id); 
-                        
+                        container.innerHTML += createMovieHTML(movie, thumb, id.id);  
                     })
                     .catch(e => console.log(e));
+                    }
                 }
                 
         

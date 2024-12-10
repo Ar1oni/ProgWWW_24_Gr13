@@ -14,11 +14,7 @@ header{
     display: flex;
     justify-content: space-between;
 }
-.logo{
-    padding-top: 25px;
-    width: 75px;
-    color: #00aaff;
-}
+
 .nav{
     display: grid;
     grid-template-columns: repeat(5,1fr);
@@ -34,6 +30,7 @@ header{
     padding-top: 35px;
     padding-bottom: 35px;
     position: relative;
+    cursor: pointer;
 }  
 .navLink::after{
     content: '';

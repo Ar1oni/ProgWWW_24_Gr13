@@ -1,5 +1,3 @@
-
-
 export default function Movies(settings) {
     const page = settings.page;
     const container = settings.container;
@@ -37,6 +35,7 @@ export default function Movies(settings) {
         .catch(e => console.log(e));
 
     function createMovieHTML(movie, thumb) {
+        const user = JSON.parse(localStorage.getItem('user')); 
         return `
             <div class="movieDivMD" data-movie-id="${movie.id}">
                 <img class="movieMD" src="${thumb}" alt="movie" />
@@ -45,10 +44,13 @@ export default function Movies(settings) {
                 <p class="ratingMd">${Math.round(movie.vote_average * 10) / 10}</p>
                 <p class="overview">${movie.overview}</p>
                 <p class="release-date">${movie.release_date}</p>
-                <div class="button-container">
+                ${user
+                    ?
+                    ` <div class="button-container">
                     <button class="bookmark-btn"><i class="fa-solid fa-bookmark"></i></button>
                     <a  href="./movie.html?id=${movie.id}" ><button class="cart-btn"><i class="fa-solid fa-cart-plus"></i></button></a>
-                </div>
+                </div>`:``}
+               
             </div>
         `;
     }
@@ -58,11 +60,12 @@ export default function Movies(settings) {
         axios.get('https://670d1d27073307b4ee425880.mockapi.io/api/v1/Favourites')
             .then(resp => {
                 const ids = resp.data.map(fav => fav.movie_id);
+                const user = JSON.parse(localStorage.getItem('user'));
                 if (ids.includes(movieId)) {  
                     hideLoader();
                     showAlert('Movie already at Favourites');
                 } else {
-                    axios.post('https://670d1d27073307b4ee425880.mockapi.io/api/v1/Favourites', { movie_id: movieId })
+                    axios.post('https://670d1d27073307b4ee425880.mockapi.io/api/v1/Favourites', { movie_id: movieId , user_id:user.id})
                         .then(resp => {
                             hideLoader();
                             showAlert('Movie added to Favourites');

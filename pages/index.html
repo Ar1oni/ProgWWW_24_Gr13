@@ -10,20 +10,7 @@
     <title>MovieShop</title>
 </head>
 <body>
-    <header>
-        <div class="header">
-            <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 10px;">
-                <i class="fa-solid fa-video fa-2xl" style="color: #ffffff; margin-top: 15px;"></i>
-                <h3 style="color: white;">MovieShop</h3>
-            </div>
-            <nav class="nav">
-                <a class="navLink" href="index.html">Home</a>
-                <a class="navLink" href="favourites.html"><i class="fa-solid fa-bookmark " style="color: #ff3333;"></i></a>
-                <a class="navLink" id="openCart"><i class="fa-solid fa-cart-shopping" style="color: #ff3333;"></i></a>
-                <a class="navLink" href="Login.html">Login</a>
-                <a class="navLink" class="showSearchButton" id="showSearchButton"><i class="fa-solid fa-magnifying-glass fa-lg" style="color:  #ffffff;"></i></a>
-            </nav>
-        </div>
+    <header id="header">
     </header>
         <form  class="search-container" id="search-container">
             <input type="text" id="search" class="search" placeholder="Search movies here..." />
@@ -56,12 +43,14 @@
    
         
     <script type="module">
-        
-        import Footer from '../components/Footer.js'
         import Slider from '../components/Slider.js'
         import slides from '../resources/slides.js'
         import Movies from '../components/Movies.js'
+        import Header from '../components/Header.js'
 
+
+        
+        document.getElementById('header').innerHTML = Header()
         function showLoader() {
           document.getElementById("loader").classList.remove("hidden");
         }
@@ -150,6 +139,7 @@
         
                 if (movies.length > 0) {
                     movies.forEach(movie => {
+                        const user = JSON.parse(localStorage.getItem('user')); 
                         const thumb = (movie.backdrop_path !== null) ? `https://image.tmdb.org/t/p/w500${movie.backdrop_path}` : `https://www.its.ac.id/tmesin/wp-content/uploads/sites/22/2022/07/no-image.png`
                         container.innerHTML += `
                         <div class="movieDivMD">
@@ -159,10 +149,12 @@
                             <p class="ratingMd">${Math.round(movie.vote_average * 10) / 10}</p>
                             <p class="overview">${movie.overview}</p>
                             <p class="release-date">${movie.release_date}</p>
-                            <div class="button-container">
-                                <button class="bookmark-btn"><i class="fa-regular fa-bookmark"></i></button>
-                                <button class="cart-btn"><i class="fa-solid fa-cart-plus"></i></button>
-                            </div>
+                            ${user
+                                ?
+                            `<div class="button-container">
+                                <button class="bookmark-btn"><i class="fa-solid fa-bookmark"></i></button>
+                                <a  href="./movie.html?id=${movie.id}" ><button class="cart-btn"><i class="fa-solid fa-cart-plus"></i></button></a>
+                            </div>`:``}
                         </div>
                         `;
                     });
@@ -197,24 +189,31 @@
 
         axios.get('https://670d1d27073307b4ee425880.mockapi.io/api/v1/Cart')
         .then(resp => {
-            const movies = resp.data
-            if(movies.length === 1){
-                document.getElementById('numberOfItems').innerHTML = `<strong>${movies.length}</strong> item`
-            }
-            else{
-                document.getElementById('numberOfItems').innerHTML = `<strong>${movies.length}</strong> items`
-            }
-            if(movies.length === 0){
-                document.getElementById('items').innerHTML = 'Your cart is empty'
-            }
-            else{
-                movies && movies.map(element => {
+            const movies = resp.data;
+            const user = JSON.parse(localStorage.getItem('user')); 
+            
+            const userMovies = movies.filter(movie => movie.user_id === user.id);
+            
+            const numberOfItems = userMovies.length;
+            document.getElementById('numberOfItems').innerHTML =
+                numberOfItems === 1
+                    ? `<strong>${numberOfItems}</strong> item`
+                    : `<strong>${numberOfItems}</strong> items`;
+    
+            if (numberOfItems === 0) {
+                document.getElementById('items').innerHTML = 'Your cart is empty';
+            } else {
+               
+                userMovies.forEach(element => {
                     axios.get(`https://api.themoviedb.org/3/movie/${element.movie_id}?api_key=3e52e2f5350ae60de5e2fc58e818d2a0`)
-                    .then(resp => {  
-                        const movie = resp.data
-                        const thumb = (movie.backdrop_path !== null) ? `https://image.tmdb.org/t/p/w500${movie.backdrop_path}` : `https://www.its.ac.id/tmesin/wp-content/uploads/sites/22/2022/07/no-image.png`
-                        document.getElementById('items').innerHTML += `
-                            <div class="cartItem" data-id="${element.id}">
+                        .then(resp => {
+                            const movie = resp.data;
+                            const thumb = movie.backdrop_path
+                                ? `https://image.tmdb.org/t/p/w500${movie.backdrop_path}`
+                                : `https://www.its.ac.id/tmesin/wp-content/uploads/sites/22/2022/07/no-image.png`;
+    
+                            document.getElementById('items').innerHTML += `
+                                <div class="cartItem" data-id="${element.id}">
                                 <img style="width: 100px; height; 100px" src="${thumb}"/>
                                 <div style="width:240px;">
                                     <h3 style="height:20px; overflow:hidden;">${movie.original_title}</h3>
@@ -223,50 +222,45 @@
                                 </div>
                                 <button style="background-color:white; " class="deleteItem"><i class="fa-solid fa-trash" style="color: #f41a1a;"></i></button>
                             </div>
-                        `
-                    })
-
-                    
-                    .catch(e => console.log(e));
-                });
-                document.getElementById('items').addEventListener('click', async (e) => {
-                    if (e.target.closest('.deleteItem')) {
-                        const cartItem = e.target.closest('.cartItem');
-                        
-                        const movieId = cartItem.dataset.id;
-                        
-                        try {
-                            showLoader();
-                            await axios.delete(`https://670d1d27073307b4ee425880.mockapi.io/api/v1/Cart/${movieId}`);
-                            
-                            
-                            cartItem.remove();
-                
-                            
-                            const items = document.querySelectorAll('.cartItem');
-                            const numberOfItems = items.length;
-                
-                            document.getElementById('numberOfItems').innerHTML =
-                                numberOfItems === 1
-                                    ? `<strong>${numberOfItems}</strong> item`
-                                    : `<strong>${numberOfItems}</strong> items`;
-                
-                            if (numberOfItems === 0) {
-                                document.getElementById('items').innerHTML = 'Your cart is empty';
-                            }
-                
-                        } catch (error) {
-                            console.error('Error deleting item:', error);
-                            alert('Failed to delete the item. Please try again.');
-                        } finally {
-                            
-                            hideLoader();
-                        }
-                    }
+                            `;
+                        })
+                        .catch(e => console.log(e));
                 });
             }
+    
+           
+            document.getElementById('items').addEventListener('click', async (e) => {
+                if (e.target.closest('.deleteItem')) {
+                    const cartItem = e.target.closest('.cartItem');
+                    const movieId = cartItem.dataset.id;
+    
+                    try {
+                        showLoader();
+                        await axios.delete(`https://670d1d27073307b4ee425880.mockapi.io/api/v1/Cart/${movieId}`);
+                        cartItem.remove();
+    
+                        const remainingItems = document.querySelectorAll('.cartItem');
+                        const updatedCount = remainingItems.length;
+    
+                        document.getElementById('numberOfItems').innerHTML =
+                            updatedCount === 1
+                                ? `<strong>${updatedCount}</strong> item`
+                                : `<strong>${updatedCount}</strong> items`;
+    
+                        if (updatedCount === 0) {
+                            document.getElementById('items').innerHTML = 'Your cart is empty';
+                        }
+                    } catch (error) {
+                        console.error('Error deleting item:', error);
+                        alert('Failed to delete the item. Please try again.');
+                    } finally {
+                        hideLoader();
+                    }
+                }
+            });
         })
-        .catch(e => console.log(e))
+        .catch(e => console.log(e));
+
 
         document.getElementById('continueShopping').addEventListener('click',function(){
             document.getElementById('cart').classList.remove('vissibleCart')
@@ -275,9 +269,57 @@
         })
 
         document.getElementById('footer').innerHTML = Footer();
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+              (position) => {
+                
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+        
+                console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+              },
+              (error) => {
+                
+                switch (error.code) {
+                  case error.PERMISSION_DENIED:
+                    console.error("User denied the request for Geolocation.");
+                    break;
+                  case error.POSITION_UNAVAILABLE:
+                    console.error("Location information is unavailable.");
+                    break;
+                  case error.TIMEOUT:
+                    console.error("The request to get user location timed out.");
+                    break;
+                  case error.UNKNOWN_ERROR:
+                    console.error("An unknown error occurred.");
+                    break;
+                }
+              }
+            );
+            }else {
+              console.error("Geolocation is not supported by this browser.");
+            }
+
     </script>
     
-    <footer id="footer" style="background-color: #000; color: #fff; text-align: center; padding: 20px 0;"></footer>
+    <footer id="footer" style="background-color: #000; color: #fff; text-align: center; padding: 20px 0;">
+        <div class="footer-container" style="width: 90%; margin: 0 auto;">
+            <div class="footer-content" style="margin-bottom: 20px;">
+                <h3 class="footer-logo" style="color: #ffcc00; font-size: 24px; font-weight: bold;">MovieShop</h3>
+                <p>&copy; <span id="year"></span> MovieShop - All Rights Reserved</p>
+            </div>
+            <div class="footer-links" style="margin-bottom: 20px;">
+                <a href="about.html" class="footer-link" style="color: #fff; margin: 0 10px; text-decoration: none; font-size: 16px;">About Us</a>
+                <a href="privacy.html" class="footer-link" style="color: #fff; margin: 0 10px; text-decoration: none; font-size: 16px;">Privacy Policy</a>
+                <a href="contact.html" class="footer-link" style="color: #fff; margin: 0 10px; text-decoration: none; font-size: 16px;">Contact Us</a>
+            </div>
+            <div class="footer-socials" style="margin-top: 10px;">
+                <a href="#" class="social-link" style="color: #fff; margin: 0 10px; text-decoration: none;"><i class="fa-brands fa-facebook fa-lg"></i></a>
+                <a href="#" class="social-link" style="color: #fff; margin: 0 10px; text-decoration: none;"><i class="fa-brands fa-twitter fa-lg"></i></a>
+                <a href="#" class="social-link" style="color: #fff; margin: 0 10px; text-decoration: none;"><i class="fa-brands fa-instagram fa-lg"></i></a>
+            </div>
+        </div>    
+    </footer>
 
 
     <div class="cart" id="cart">

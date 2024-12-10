@@ -19,8 +19,7 @@
             <nav class="nav">
                 <a class="navLink" href="index.html">Home</a>
                 <a class="navLink" href="favourites.html"><i class="fa-solid fa-bookmark " style="color: #ff3333;"></i></a>
-                <a class="navLink" href="Cart.html"><i class="fa-solid fa-cart-shopping " style="color: #ff3333;"></i></a>
-                <a class="navLink" href="Login.html">Login</a>
+                <a class="navLink" href="profile.html" ><i class="fa-solid fa-user" style="color: #ff3333;"></i></a>
             </nav>
         </div>
     </header>
@@ -39,7 +38,6 @@
         function hideLoader() {
           document.getElementById("loader").classList.add("hidden");
         }
-        
         axios.get(`https://api.themoviedb.org/3/movie/${movieId}?api_key=3e52e2f5350ae60de5e2fc58e818d2a0`)
         .then(resp => {
 
@@ -49,12 +47,14 @@
                     : `https://www.its.ac.id/tmesin/wp-content/uploads/sites/22/2022/07/no-image.png`;
             container.innerHTML = createMovie(movie,thumb)
             document.getElementById('addToCartBtn').addEventListener('click', function () {
+              const user = JSON.parse(localStorage.getItem('user'));
               const quantity = document.getElementById('quantity').value;
               const price = 22.99;
               const data = {
                 movie_id: movieId,
                 quantity: quantity,
                 price: (quantity * price).toFixed(2),
+                user_id: user.id
               };
               showLoader()
               axios.post('https://670d1d27073307b4ee425880.mockapi.io/api/v1/Cart', data)

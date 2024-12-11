@@ -24,12 +24,12 @@ export default function Header() {
                 <a class="navLink" href="index.html">Home</a>
                 ${user 
                     ? `
-                    <a class="navLink" href="favourites.html"><i class="fa-solid fa-bookmark" style="color: #ff3333;"></i></a>
+                    <a class="navLink" href="pages/favourites.html"><i class="fa-solid fa-bookmark" style="color: #ff3333;"></i></a>
                     <a class="navLink" id="openCart"><i class="fa-solid fa-cart-shopping" style="color: #ff3333;"></i></a>
-                    <a class="navLink" href="profile.html" ><i class="fa-solid fa-user" style="color: #ff3333;"></i></a>
+                    <a class="navLink" href="pages/profile.html" ><i class="fa-solid fa-user" style="color: #ff3333;"></i></a>
                     `
                     : `
-                    <a class="navLink" href="Login.html">Login</a>
+                    <a class="navLink" href="pages/Login.html">Login</a>
                     `}
                 <a class="navLink" id="showSearchButton"><i class="fa-solid fa-magnifying-glass fa-lg" style="color:  #ffffff;"></i></a>
             </nav>

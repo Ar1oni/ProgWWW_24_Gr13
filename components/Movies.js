@@ -48,7 +48,7 @@ export default function Movies(settings) {
                     ?
                     ` <div class="button-container">
                     <button class="bookmark-btn"><i class="fa-solid fa-bookmark"></i></button>
-                    <a  href="./movie.html?id=${movie.id}" ><button class="cart-btn"><i class="fa-solid fa-cart-plus"></i></button></a>
+                    <a  href="pages/movie.html?id=${movie.id}" ><button class="cart-btn"><i class="fa-solid fa-cart-plus"></i></button></a>
                 </div>`:``}
                
             </div>

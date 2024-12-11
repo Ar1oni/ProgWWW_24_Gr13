@@ -11,11 +11,12 @@
     <title>MovieShop</title>
 </head>
 <body>
+   
     <header>
         <div class="header">
             <h1 class="logo">MovieShop</h1>
             <nav class="nav">
-                <a class="navLink" href="index.html">Home</a>
+                <a class="navLink" href="../index.html">Home</a>
                 <a class="navLink" href="Login.html">Login</a>
             </nav>
         </div>
@@ -46,7 +47,7 @@
                 if (user) {
                     alert('Logged in');
                     localStorage.setItem("user",JSON.stringify(user));
-                    window.location.href = 'index.html';
+                    window.location.href = '../index.html';
                 } else {
                     alert('Your email or password are wrong');
                 }
